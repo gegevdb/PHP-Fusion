@@ -10,7 +10,7 @@ include "locale/".LOCALESET."locale.php"; // this works too (same as above)
 
 $tab['title'] = array($locale['debonair_0200'], $locale['debonair_0201']);
 $tab['id'] = array("banner", "tsettings");
-$tab_active = tab_active($tab, 1);
+$tab_active = tab_active($tab, 0);
 echo opentab($tab, $tab_active, "debonair_widget");
 echo opentabbody($tab['title'][0], $tab['id'][0], $tab_active);
 debonair_banner_widget();
@@ -22,12 +22,12 @@ echo closetab();
 
 
 function debonair_banner_widget() {
-	global $aidlink, $locale;
-
-	echo "<a class='btn btn-default m-t-10 m-b-20' href='".clean_request("slides=new", array(), false)."'>".$locale['debonair_0203']."</a>\n";
-
+	global $locale;
 	$acceptedMode = array("edit", "new", "del");
-	if (isset($_GET['slides']) && (in_array($_GET['slides'], $acceptedMode) && isset($_GET['id']) && isnum($_GET['id']))) {
+	echo "<a class='btn btn-default m-t-10 m-b-20' href='".clean_request("slides=new", array(), false)."'>".$locale['debonair_0203']."</a>\n";
+	echo "<div class='alert alert-info'>".$locale['debonair_0700']."</div>\n";
+	if (isset($_GET['slides']) && (in_array($_GET['slides'], $acceptedMode))) {
+		$_GET['id'] = isset($_GET['id']) && isnum($_GET['id']) ? $_GET['id'] : 0;
 		$data = array();
 		$db_keys = fieldgenerator(DB_DEBONAIR);
 		foreach($db_keys as $keys) {
@@ -123,7 +123,6 @@ function debonair_banner_widget() {
 			}
 			addNotice("success", $locale['debonair_0220']);
 			redirect(clean_request("", array("move", "id"), false));
-
 		}
 
 		$result = dbquery("SELECT * FROM ".DB_DEBONAIR." WHERE banner_language='".LANGUAGE."' order by banner_order ASC");
