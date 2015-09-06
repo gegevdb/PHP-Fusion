@@ -35,7 +35,8 @@ if (isset($_GET['photo_id']) && isnum($_GET['photo_id'])) {
 	include INCLUDES."comments_include.php";
 	include INCLUDES."ratings_include.php";
 	add_to_jquery("$('a.photogallery_photo_link').colorbox({width:'80%', height:'80%', photo:true});");
-	$result = dbquery("SELECT tp.*, ta.album_id, ta.album_title, ta.album_access,
+
+	$result = dbquery("SELECT tp.*, ta.album_id, ta.album_title, ta.album_access, ta.album_keywords,
 		tu.user_id, tu.user_name, tu.user_status,
 		SUM(tr.rating_vote) AS sum_rating, COUNT(tr.rating_item_id) AS count_votes,
 		count(tc.comment_id) AS comment_count
@@ -66,6 +67,18 @@ if (isset($_GET['photo_id']) && isnum($_GET['photo_id'])) {
 						   'link' => INFUSIONS."gallery/gallery.php?album_id=".$data['album_id'],
 						   'title' => $data['album_title']
 					   ));
+
+		if ($data['album_keywords'] !=="") {
+			set_meta("keywords", $data['album_keywords']);
+			if ($data['photo_keywords'] !=="") {
+				add_to_meta("keywords", $data['photo_keywords']);
+			}
+		} else {
+			if ($data['photo_keywords'] !=="") {
+				set_meta("keywords", $data['photo_keywords']);
+			}
+		}
+
 		add_breadcrumb(array(
 						   'link' => INFUSIONS."gallery/gallery.php?photo_id=".$data['photo_id'],
 						   'title' => $data['photo_title']
@@ -143,7 +156,7 @@ if (isset($_GET['photo_id']) && isnum($_GET['photo_id'])) {
 }
 elseif (isset($_GET['album_id']) && isnum($_GET['album_id'])) {
 	/* View Album */
-	$result = dbquery("SELECT album_title, album_description, album_image, album_thumb1, album_thumb2, album_access
+	$result = dbquery("SELECT album_title, album_description, album_keywords, album_image, album_thumb1, album_thumb2, album_access
 	FROM ".DB_PHOTO_ALBUMS." WHERE ".groupaccess('album_access')." AND album_id='".intval($_GET['album_id'])."'
 	");
 	if (dbrows($result) > 0) {
@@ -153,6 +166,9 @@ elseif (isset($_GET['album_id']) && isnum($_GET['album_id'])) {
 						   'link' => INFUSIONS.'gallery/gallery.php?album_id='.$_GET['album_id'],
 						   'title' => $info['album_title']
 					   ));
+		if ($info['album_keywords'] !== "") {
+			add_to_meta("keywords", $info['album_keywords']);
+		}
 		/* Category Info */
 		$info['album_thumb'] = displayAlbumImage($info['album_image'], $info['album_thumb2'], $info['album_thumb1'], "");
 		$info['album_link'] = array(

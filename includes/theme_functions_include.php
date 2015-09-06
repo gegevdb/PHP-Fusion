@@ -16,6 +16,7 @@
 | copyright header is strictly prohibited without
 | written permission from the original author(s).
 +--------------------------------------------------------*/
+
 use PHPFusion\Database\DatabaseFactory;
 
 if (!defined("IN_FUSION")) {
@@ -58,7 +59,6 @@ if (!function_exists("alert")) {
 		return $html;
 	}
 }
-
 // Get the widget settings for the theme settings table
 if (!function_exists('get_theme_settings')) {
 	function get_theme_settings($theme_folder) {
@@ -74,16 +74,13 @@ if (!function_exists('get_theme_settings')) {
 		}
 	}
 }
-
-
-
 /**
  * Java script that transform html table sortable
  * @param $table_id - table ID
  * @return string
  */
 function fusion_sort_table($table_id) {
-	add_to_head("<script type='text/javascript' src='".DYNAMICS."assets/tablesorter/jquery.tablesorter.min.js'></script>");
+	add_to_head("<script type='text/javascript' src='".INCLUDES."jquery/tablesorter/jquery.tablesorter.min.js'></script>");
 	add_to_jquery("
 	$('#".$table_id."').tablesorter();
 	");
@@ -108,23 +105,29 @@ function col_span($items_per_row, $bootstrap_units = FALSE) {
 
 if (!function_exists("label")) {
 	function label($label, array $options = array()) {
-		$options += array("class" => !empty($array['class']) ? $array['class'] : "",
-			"icon" => !empty($array['icon']) ? "<i class='".$array['icon']."'></i> " : "",);
+		$options += array(
+			"class" => !empty($array['class']) ? $array['class'] : "",
+			"icon" => !empty($array['icon']) ? "<i class='".$array['icon']."'></i> " : "",
+		);
 		return "<span class='label ".$options['class']."'>".$options['icon'].$label."</span>\n";
 	}
 }
 if (!function_exists("badge")) {
 	function badge($label, array $options = array()) {
-		$options += array("class" => !empty($array['class']) ? $array['class'] : "",
-			"icon" => !empty($array['icon']) ? "<i class='".$array['icon']."'></i> " : "",);
+		$options += array(
+			"class" => !empty($array['class']) ? $array['class'] : "",
+			"icon" => !empty($array['icon']) ? "<i class='".$array['icon']."'></i> " : "",
+		);
 		return "<span class='badge ".$options['class']."'>".$options['icon'].$label."</span>\n";
 	}
 }
 function openmodal($id, $title, $options = array()) {
 	global $locale;
-	$options += array('class' => !empty($options['class']) ? : 'modal-lg',
+	$options += array(
+		'class' => !empty($options['class']) ? : 'modal-lg',
 		'button_id' => !empty($options['button_id']) ? : 0,
-		'static' => !empty($options['static']) ? : 0,);
+		'static' => !empty($options['static']) ? : 0,
+	);
 	if ($options['static'] && $options['button_id']) {
 		add_to_jquery("$('#".$options['button_id']."').bind('click', function(e){ $('#".$id."-Modal').modal({backdrop: 'static', keyboard: false}).modal('show'); });");
 	} elseif ($options['static'] && empty($options['button_id'])) {
@@ -169,10 +172,12 @@ function progress_bar($num, $title = FALSE, $class = FALSE, $height = FALSE, $re
 		}
 	}
 	$_barcolor = array('progress-bar-success', 'progress-bar-info', 'progress-bar-warning', 'progress-bar-danger');
-	$_barcolor_reverse = array('progress-bar-success',
+	$_barcolor_reverse = array(
+		'progress-bar-success',
 		'progress-bar-info',
 		'progress-bar-warning',
-		'progress-bar-danger');
+		'progress-bar-danger'
+	);
 	$html = '';
 	if (is_array($num)) {
 		$html .= "<div class='progress' style='height: ".$height."'>\n";
@@ -272,10 +277,10 @@ function showbanners($display = "") {
 
 /**
  * Displays Site Links Navigation Bar
- * @param string $sep - Custom seperator text
- * @param string $class - Class
+ * @param string $sep     - Custom seperator text
+ * @param string $class   - Class
  * @param array  $options - Expansions 9.1
- * @param int    $id - 0 for root , Sitelink_ID to show child only
+ * @param int    $id      - 0 for root , Sitelink_ID to show child only
  * @return string
  */
 function showsublinks($sep = "", $class = "", array $options = array(), $id = 0) {
@@ -313,7 +318,7 @@ function showsublinks($sep = "", $class = "", array $options = array(), $id = 0)
 				if ($i == 0) {
 					$li_class .= ($li_class ? " " : "")."first-link";
 				}
-				if (START_PAGE == $link_data['link_url'] || START_PAGE == fusion_get_settings("opening_page") && $i==0) {
+				if (START_PAGE == $link_data['link_url'] || START_PAGE == fusion_get_settings("opening_page") && $i == 0) {
 					$li_class .= ($li_class ? " " : "")."current-link active";
 				}
 				if (preg_match("!^(ht|f)tp(s)?://!i", $link_data['link_url'])) {
@@ -441,12 +446,10 @@ function itemoptions($item_type, $item_id) {
  */
 function showrendertime($queries = TRUE) {
 	global $locale, $mysql_queries_count;
-
 	$db = DatabaseFactory::getConnection();
 	if ($db) {
 		$mysql_queries_count = $db->getGlobalQueryCount();
 	}
-
 	if (fusion_get_settings('rendertime_enabled') == 1 || (fusion_get_settings('rendertime_enabled') == 2 && iADMIN)) {
 		$render_time = substr((microtime(TRUE)-START_TIME), 0, 7);
 		$_SESSION['performance'][] = $render_time;
@@ -569,10 +572,12 @@ function breadcrumb_items($db, $id_col, $cat_col, $name_col, $id) {
  */
 if (!function_exists('display_avatar')) {
 	function display_avatar(array $userdata, $size, $class = '', $link = TRUE, $img_class = 'img-thumbnail') {
-		$userdata += array('user_id' => 0,
+		$userdata += array(
+			'user_id' => 0,
 			'user_name' => '',
 			'user_avatar' => '',
-			'user_status' => '');
+			'user_status' => ''
+		);
 		if (!$userdata['user_id']) {
 			$userdata['user_id'] = 1;
 		}
@@ -658,12 +663,14 @@ function timer($updated = FALSE) {
 	}
 	//	$timer = array($year => $locale['year'], $month => $locale['month'], $day => $locale['day'], $hour => $locale['hour'], $minute => $locale['minute'], $second => $locale['second']);
 	//	$timer_b = array($year => $locale['year_a'], $month => $locale['month_a'], $day => $locale['day_a'], $hour => $locale['hour_a'], $minute => $locale['minute_a'], $second => $locale['second_a']);
-	$timer = array($year => $locale['fmt_year'],
+	$timer = array(
+		$year => $locale['fmt_year'],
 		$month => $locale['fmt_month'],
 		$day => $locale['fmt_day'],
 		$hour => $locale['fmt_hour'],
 		$minute => $locale['fmt_minute'],
-		$second => $locale['fmt_second']);
+		$second => $locale['fmt_second']
+	);
 	foreach ($timer as $arr => $unit) {
 		$calc = $calculated/$arr;
 		if ($calc >= 1) {
@@ -690,18 +697,22 @@ function countdown($time) {
 	$day = 24*$hour;
 	$month = days_current_month()*$day;
 	$year = (date("L", $updated) > 0) ? 366*$day : 365*$day;
-	$timer = array($year => $locale['year'],
+	$timer = array(
+		$year => $locale['year'],
 		$month => $locale['month'],
 		$day => $locale['day'],
 		$hour => $locale['hour'],
 		$minute => $locale['minute'],
-		$second => $locale['second']);
-	$timer_b = array($year => $locale['year_a'],
+		$second => $locale['second']
+	);
+	$timer_b = array(
+		$year => $locale['year_a'],
 		$month => $locale['month_a'],
 		$day => $locale['day_a'],
 		$hour => $locale['hour_a'],
 		$minute => $locale['minute_a'],
-		$second => $locale['second_a']);
+		$second => $locale['second_a']
+	);
 	foreach ($timer as $arr => $unit) {
 		$calc = $updated/$arr;
 		if ($calc >= 1) {
@@ -754,9 +765,9 @@ function closecollapse() {
 
 /**
  * Current Tab Active Selector
- * @param      $array - multidimension array consisting of keys 'title', 'id', 'icon'
+ * @param      $array          - multidimension array consisting of keys 'title', 'id', 'icon'
  * @param      $default_active - 0 if link_mode is false, $_GET if link_mode is true
- * @param bool $link_mode - set to true if tab is a link
+ * @param bool $link_mode      - set to true if tab is a link
  * @return string
  * @todo: options base
  */
@@ -779,6 +790,7 @@ function tab_active($array, $default_active, $link_mode = FALSE) {
 		$title = $array['title'][$default_active];
 		$v_link = str_replace(" ", "-", $title);
 		$v_link = str_replace("/", "-", $v_link);
+		$v_link = ""; // test without link convertor
 		return "".$id."$v_link";
 	}
 }
@@ -789,18 +801,24 @@ function opentab($tab_title, $link_active_arrkey, $id, $link = FALSE, $class = F
 	$html = "<div class='nav-wrapper $class'>\n";
 	$html .= "<ul class='nav nav-tabs' ".($id ? "id='".$id."'" : "")." >\n";
 	foreach ($tab_title['title'] as $arr => $v) {
-		$v_link = str_replace(" ", "-", $v);
-		$v_link = str_replace("/", "-", $v_link);
+		//$v_link = str_replace(" ", "-", htmlspecialchars($v));
+		//$v_link = str_replace("/", "-", $v_link);
+		//$v_link = str_replace("?", "-", $v_link);
+		$v_link = ""; // test without title convertor
 		$v_title = str_replace("-", " ", $v);
 		$icon = (isset($tab_title['icon'][$arr])) ? $tab_title['icon'][$arr] : "";
 		$inner_id = $tab_title['id'][$arr];
-		$link_url = $link ? clean_request('section='.$inner_id, array('aid',
-			'a_page', 'action', 'theme',
+		$link_url = $link ? clean_request('section='.$inner_id, array(
+			'aid',
+			'a_page',
+			'action',
+			'theme',
 			'thread_id',
 			'forum_id',
 			'ref',
 			'id',
-			'parent_id')) : '#';
+			'parent_id'
+		)) : '#';
 		if ($link_mode) {
 			$html .= ($link_active_arrkey == $inner_id) ? "<li class='active'>\n" : "<li>\n";
 		} else {
@@ -816,6 +834,7 @@ function opentab($tab_title, $link_active_arrkey, $id, $link = FALSE, $class = F
 
 function opentabbody($tab_title, $id, $link_active_arrkey = FALSE, $link = FALSE, $key = FALSE) {
 	$key = $key ? $key : 'section';
+	// get
 	if (isset($_GET[$key]) && $link == 1) {
 		$link = '';
 		if ($link_active_arrkey == $id) {
@@ -836,12 +855,14 @@ function opentabbody($tab_title, $id, $link_active_arrkey = FALSE, $link = FALSE
 		} else {
 			$link = '';
 		}
-		if ($link_active_arrkey == "".$id."$link") {
+		//if ($link_active_arrkey == "".$id."$link") {
+		if ($link_active_arrkey == $id) { // test without link convertor
 			$status = "in active";
 		} else {
 			$status = "";
 		}
 	}
+	$link = ""; // test without link convertor
 	return "<div class='tab-pane fade ".$status."' id='".$id."$link'>\n";
 }
 
@@ -890,4 +911,3 @@ function fusion_confirm_exit() {
 	});
 	");
 }
-

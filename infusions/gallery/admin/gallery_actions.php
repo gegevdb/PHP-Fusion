@@ -88,6 +88,10 @@ if (isset($_GET['action']) && $_GET['action'] == "delete" && isset($_GET['cat_id
 			foreach ($list as $album_id => $album_title) {
 				$albumArray[$album_id] = sprintf($locale['album_0029'], $album_title);
 			}
+
+			// unset own album
+			unset($albumArray[$_GET['cat_id']]);
+
 			if (isset($_POST['confirm_delete'])) {
 				$targetAlbum = form_sanitizer($_POST['target_album'], '0', 'target_album');
 				// Purge or move photos
@@ -105,7 +109,7 @@ if (isset($_GET['action']) && $_GET['action'] == "delete" && isset($_GET['cat_id
 					} else {
 						// delete all
 						$photoRows = 0;
-						while ($photo_data = dbarray($result)) {
+						while ($photo_data = dbarray($photosResult)) {
 							purgePhotoImage($photo_data);
 							dbquery("delete from ".DB_COMMENTS." where comment_item_id='".intval($photo_data['photo_id'])."' and comment_type='P'");
 							dbquery("delete from ".DB_RATINGS." where rating_item_id='".intval($photo_data['photo_id'])."' and rating_type='P'");
@@ -115,9 +119,9 @@ if (isset($_GET['action']) && $_GET['action'] == "delete" && isset($_GET['cat_id
 						addNotice("success", sprintf($locale['album_0032'], $photoRows));
 					}
 				}
-				// End purge or move
 				purgeAlbumImage($albumData);
 				dbquery_insert(DB_PHOTO_ALBUMS, $albumData, "delete");
+				redirect(FUSION_SELF.$aidlink);
 			} else {
 				// Confirmation form
 				echo openmodal('confirm_steps', $locale['album_0027']);
@@ -139,9 +143,9 @@ if (isset($_GET['action']) && $_GET['action'] == "delete" && isset($_GET['cat_id
 			purgeAlbumImage($albumData);
 			dbquery_insert(DB_PHOTO_ALBUMS, $albumData, "delete");
 			addNotice("success", $locale['album_0030']);
+			redirect(FUSION_SELF.$aidlink);
 		}
 	}
-	redirect(FUSION_SELF.$aidlink);
 }
 // delete photo
 if (isset($_GET['action']) && $_GET['action'] == "delete" && isset($_GET['photo_id']) && isnum($_GET['photo_id'])) {
@@ -152,7 +156,7 @@ if (isset($_GET['action']) && $_GET['action'] == "delete" && isset($_GET['photo_
 		purgePhotoImage($photo_data);
 		dbquery("delete from ".DB_COMMENTS." where comment_item_id='".intval($photo_data['photo_id'])."' and comment_type='P'");
 		dbquery("delete from ".DB_RATINGS." where rating_item_id='".intval($photo_data['photo_id'])."' and rating_type='P'");
-		dbquery_order(DB_PHOTOS, $pData['photo_order'], "photo_order", $pData['photo_id'], "photo_id", $pData['album_id'], "album_id", FALSE, FALSE, "delete");
+		dbquery_order(DB_PHOTOS, $photo_data['photo_order'], "photo_order", $photo_data['photo_id'], "photo_id", $photo_data['album_id'], "album_id", FALSE, FALSE, "delete");
 		dbquery_insert(DB_PHOTOS, $photo_data, 'delete');
 		addNotice("success", $locale['photo_0024']);
 		redirect(clean_request("", array("aid", "album_id"), TRUE));
